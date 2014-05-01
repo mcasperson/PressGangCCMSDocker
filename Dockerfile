@@ -34,6 +34,7 @@ RUN apt-get install patch nano supervisor default-jre-headless unzip wget mariad
 # will be imported into the database if there is no existing content.
 ADD initial_db_setup /root/initial_db_setup
 ADD initialdb.sql /root/initialdb.sql
+ADD autoinc_reset.sql /root/autoinc_reset.sql
 RUN chmod +x /root/initial_db_setup
  
 # Add some scripts to launch applications when some condition is met. This is used because supervisord doesn't have the

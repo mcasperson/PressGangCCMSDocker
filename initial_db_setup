@@ -22,6 +22,7 @@ if ! test "$(ls -A "/var/database")"; then
     # Import the initial database
     mysql -uroot -e "CREATE SCHEMA Skynet;"
     mysql -uroot -DSkynet < /root/initialdb.sql
+    mysql -uroot -DSkynet < /root/autoinc_reset.sql
 
     mysqladmin -uroot shutdown       
 fi
