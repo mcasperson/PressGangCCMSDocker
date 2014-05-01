@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if ! test "$(ls -A "/var/database")"; then
+    if [ ! -d "/var/databaselogs/mysql" ]; then
+      mkdir /var/databaselogs/mysql
+    fi
+    chown -R mysql:mysql /var/database
+    chown -R mysql:mysql /var/databaselogs
+    mysql_install_db
+    
+    # Create a user called admin for remote access
+    /usr/bin/mysqld_safe > /dev/null 2>&1 &
+    RET=1
+    while [[ RET -ne 0 ]]; do
+	    sleep 5
+	    mysql -uroot -e "status" > /dev/null 2>&1
+	    RET=$?
+    done
+    mysql -uroot -e "CREATE USER 'admin'@'%' IDENTIFIED BY 'mariadb'"
+    mysql -uroot -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION"
+    
+    # Import the initial database
+    mysql -uroot -e "CREATE SCHEMA Skynet;"
+    mysql -uroot -DSkynet < /root/initialdb.sql
+
+    mysqladmin -uroot shutdown       
+fi
+
+touch /var/database/.processed

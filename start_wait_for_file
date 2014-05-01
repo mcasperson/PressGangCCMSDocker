@@ -1,0 +1,9 @@
+#!/bin/bash
+# Delays the execution of a program until a file is available
+while [ ! -f "$1" ]; do
+  sleep 5
+done
+shift
+COMMAND=$1
+shift
+${COMMAND} "$@"
