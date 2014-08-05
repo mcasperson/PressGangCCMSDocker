@@ -6,7 +6,10 @@ if ! test "$(ls -A "/var/database")"; then
     fi
     chown -R mysql:mysql /var/database
     chown -R mysql:mysql /var/databaselogs
+    
     mysql_install_db
+    
+    chown -R mysql:mysql /var/database
     
     # Create a user called admin for remote access
     /usr/bin/mysqld_safe > /dev/null 2>&1 &
