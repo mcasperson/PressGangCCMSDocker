@@ -21,7 +21,7 @@ if ! test "$(ls -A "/var/database")"; then
     
     # Import the initial database
     mysql -uroot -e "CREATE SCHEMA Skynet;"
-    mysql -uroot -DSkynet < /root/initialdb.sql
+    mysql -uroot -DSkynet < /home/pressgang/initialdb.sql
 
     mysqladmin -uroot shutdown       
 fi

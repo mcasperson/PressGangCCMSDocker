@@ -2,8 +2,8 @@
 # mkdir /tmp/database
 # mkdir /tmp/databaselogs
 # mkdir /tmp/aslogs
-# sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw --name PressGang pressgangbasetest
-# sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw -i -t --name PressGang pressgangbasetest /bin/bash
+# sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw pressgangbasetest
+# sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw -i -t pressgangbasetest /bin/bash
  
 FROM fedora:20
  
@@ -49,7 +49,7 @@ RUN sed -i "s#bind-address[[:space:]]*=[[:space:]]*127.0.0.1#bind-address=0.0.0.
 RUN sed -i "0,/^\\[mysqld\\]/{s#\\[mysqld\\]#\\[mysqld\\]\\nbinlog_format=row#}" /etc/my.cnf
 
 # Configure PressGang
-ADD wildfly/standalone/configuration/pressgang/application.properties /var/lib/wildfly/standalone/configuration/pressgang/application.properties
+ADD wildfly/standalone/configuration/pressgang/application.properties /etc/wildfly/standalone/configuration/pressgang/application.properties
 ADD wildfly/standalone/configuration/pressgang/entities.properties /var/lib/wildfly/standalone/configuration/pressgang/entities.properties
 ADD wildfly/standalone/deployments/mysql-connector-java.jar /var/lib/wildfly/standalone/deployments/mysql-connector-java.jar
 ADD wildfly/standalone/deployments/pressgang-ccms-1.9-SNAPSHOT.ear /var/lib/wildfly/standalone/deployments/pressgang-ccms-1.9-SNAPSHOT.ear
@@ -58,6 +58,6 @@ ADD wildfly/standalone/deployments/teiid-jdbc.jar /var/lib/wildfly/standalone/de
 ADD JPPF /home/pressgang
 ADD setup.cli /home/pressgang/setup.cli
 
-# Fix up the database password
-RUN sed -i "s#<user-name></user-name>#<user-name>admin</user-name>#" /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
-RUN sed -i "s#<password></password>#<password>mariadb</password>#" /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
+# Fix up the database password. These details need to match those defined in the initial_db_setup file
+RUN sed -i "0,/<user-name></user-name>/{s#<user-name></user-name>#<user-name>admin</user-name>#}" /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
+RUN sed -i "0,/<password></password>/{s#<password></password>#<password>mariadb</password>#}" /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
