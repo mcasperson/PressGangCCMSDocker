@@ -1,4 +1,4 @@
-# docker build -t PressGangBaseTest .
+# docker build -t pressgangbasetest .
 # mkdir /tmp/database
 # mkdir /tmp/databaselogs
 # mkdir /tmp/aslogs
@@ -43,10 +43,10 @@ ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN sed -i "s#%SUPERVISORD_PASS%#supervisor#" /etc/supervisor/conf.d/supervisord.conf
  
 # Configure MariaDB to use the external database volume
-RUN sed -i "s#datadir[[:space:]]*=[[:space:]]*/var/lib/mysql#datadir=/var/database#g" /etc/mysql/my.cnf
+RUN sed -i "s#datadir[[:space:]]*=[[:space:]]*/var/lib/mysql#datadir=/var/database#g" /etc/my.cnf
 RUN sed -i "s#/var/log#/var/databaselogs#g" /etc/mysql/my.cnf
-RUN sed -i "s#bind-address[[:space:]]*=[[:space:]]*127.0.0.1#bind-address=0.0.0.0#" /etc/mysql/my.cnf
-RUN sed -i "s#\\[mysqld\\]#\\[mysqld\\]\\nbinlog_format=row#" /etc/mysql/my.cnf
+RUN sed -i "s#bind-address[[:space:]]*=[[:space:]]*127.0.0.1#bind-address=0.0.0.0#" /etc/my.cnf
+RUN sed -i "s#\\[mysqld\\]#\\[mysqld\\]\\nbinlog_format=row#" /etc/my.cnf
 
 # Configure PressGang
 ADD wildfly/standalone/configuration/pressgang/application.properties /var/lib/wildfly/standalone/configuration/pressgang/application.properties
