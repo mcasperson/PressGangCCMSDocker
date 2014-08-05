@@ -14,7 +14,7 @@ EXPOSE 3306 8080 9990 9001
 VOLUME ["/var/database", "/var/databaselogs", "/var/aslogs"]
  
 # Run supervisor, which in turn will run all the other services
-CMD ["/usr/bin/supervisord", "-c /etc/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
  
 # Install various apps
 RUN yum install mariadb-server nano supervisor wget unzip java-1.8.0-openjdk-headless wildfly -y
@@ -46,7 +46,7 @@ RUN sed -i "s#%SUPERVISORD_PASS%#supervisor#" /etc/supervisord.conf
 RUN sed -i "s#datadir[[:space:]]*=[[:space:]]*/var/lib/mysql#datadir=/var/database#g" /etc/my.cnf
 RUN sed -i "s#/var/log#/var/databaselogs#g" /etc/my.cnf
 RUN sed -i "s#bind-address[[:space:]]*=[[:space:]]*127.0.0.1#bind-address=0.0.0.0#" /etc/my.cnf
-RUN sed -i "s#\\[mysqld\\]#\\[mysqld\\]\\nbinlog_format=row#" /etc/my.cnf
+RUN sed -i "0,/^\\[mysqld\\]/{s#\\[mysqld\\]#\\[mysqld\\]\\nbinlog_format=row#}" /etc/my.cnf
 
 # Configure PressGang
 ADD wildfly/standalone/configuration/pressgang/application.properties /var/lib/wildfly/standalone/configuration/pressgang/application.properties
