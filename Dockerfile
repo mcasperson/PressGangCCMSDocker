@@ -18,25 +18,22 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
  
 # Install various apps
 RUN yum install mariadb-server nano supervisor wget unzip java-1.8.0-openjdk-headless wildfly -y
-
-# Create the user pressgang
-RUN adduser pressgang
  
 # Create a script to initialize the database directory if it is empty. initialdb.sql contains a clean initial database that
 # will be imported into the database if there is no existing content.
-ADD initial_db_setup /home/pressgang/initial_db_setup
-ADD initialdb.sql /home/pressgang/initialdb.sql
-RUN chmod +x /home/pressgang/initial_db_setup
+ADD initial_db_setup /root/initial_db_setup
+ADD initialdb.sql /root/initialdb.sql
+RUN chmod +x /root/initial_db_setup
  
 # Add some scripts to launch applications when some condition is met. This is used because supervisord doesn't have the
 # ability to add dependencies between services, and we need to have the database initialized, MariaDB started, and then
 # EAP started in that order. These scripts allow us to do that.
-ADD start_delay /home/pressgang/start_delay
-RUN chmod +x /home/pressgang/start_delay
-ADD start_wait_for_file /home/pressgang/start_wait_for_file
-RUN chmod +x /home/pressgang/start_wait_for_file
-ADD start_wait_for_mariadb /home/pressgang/start_wait_for_mariadb
-RUN chmod +x /home/pressgang/start_wait_for_mariadb
+ADD start_delay /root/start_delay
+RUN chmod +x /root/start_delay
+ADD start_wait_for_file /root/start_wait_for_file
+RUN chmod +x /root/start_wait_for_file
+ADD start_wait_for_mariadb /root/start_wait_for_mariadb
+RUN chmod +x /root/start_wait_for_mariadb
  
 # Configure supervisord. supervisord.conf comes preconfigured with all the services used by this image. 
 ADD supervisord.conf /etc/supervisord.conf
@@ -55,9 +52,9 @@ ADD wildfly/standalone/deployments/mysql-connector-java.jar /var/lib/wildfly/sta
 ADD wildfly/standalone/deployments/pressgang-ccms-1.9-SNAPSHOT.ear /var/lib/wildfly/standalone/deployments/pressgang-ccms-1.9-SNAPSHOT.ear
 ADD wildfly/standalone/deployments/pressgang-ds.xml /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
 ADD wildfly/standalone/deployments/teiid-jdbc.jar /var/lib/wildfly/standalone/deployments/teiid-jdbc.jar
-ADD JPPF /home/pressgang
-ADD setup.cli /home/pressgang/setup.cli
+ADD JPPF /root
+ADD setup.cli /root/setup.cli
 
 # Fix up the database password. These details need to match those defined in the initial_db_setup file
-RUN sed -i "0,/<user-name></user-name>/{s#<user-name></user-name>#<user-name>admin</user-name>#}" /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
-RUN sed -i "0,/<password></password>/{s#<password></password>#<password>mariadb</password>#}" /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
+RUN sed -i "0,#<user-name></user-name>#{s#<user-name></user-name>#<user-name>admin</user-name>#}" /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
+RUN sed -i "0,#<password></password>#{s#<password></password>#<password>mariadb</password>#}" /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
