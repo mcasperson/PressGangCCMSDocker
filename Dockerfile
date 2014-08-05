@@ -2,8 +2,8 @@
 # mkdir /tmp/database
 # mkdir /tmp/databaselogs
 # mkdir /tmp/aslogs
-# sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw --name PressGang PressGangBaseTest
-# docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw -i -t --name PressGang PressGangBaseTest /bin/bash
+# sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw --name PressGang pressgangbasetest
+# sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw -i -t --name PressGang pressgangbasetest /bin/bash
  
 FROM fedora:20
  
@@ -14,7 +14,7 @@ EXPOSE 3306 8080 9990 9001
 VOLUME ["/var/database", "/var/databaselogs", "/var/aslogs"]
  
 # Run supervisor, which in turn will run all the other services
-CMD ["/usr/bin/supervisord"]
+CMD ["/usr/bin/supervisord", "-c /etc/supervisord.conf"]
  
 # Install various apps
 RUN yum install mariadb-server nano supervisor wget unzip java-1.8.0-openjdk-headless wildfly -y
@@ -39,12 +39,12 @@ ADD start_wait_for_mariadb /home/pressgang/start_wait_for_mariadb
 RUN chmod +x /home/pressgang/start_wait_for_mariadb
  
 # Configure supervisord. supervisord.conf comes preconfigured with all the services used by this image. 
-ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-RUN sed -i "s#%SUPERVISORD_PASS%#supervisor#" /etc/supervisor/conf.d/supervisord.conf
+ADD supervisord.conf /etc/supervisord.conf
+RUN sed -i "s#%SUPERVISORD_PASS%#supervisor#" /etc/supervisord.conf
  
 # Configure MariaDB to use the external database volume
 RUN sed -i "s#datadir[[:space:]]*=[[:space:]]*/var/lib/mysql#datadir=/var/database#g" /etc/my.cnf
-RUN sed -i "s#/var/log#/var/databaselogs#g" /etc/mysql/my.cnf
+RUN sed -i "s#/var/log#/var/databaselogs#g" /etc/my.cnf
 RUN sed -i "s#bind-address[[:space:]]*=[[:space:]]*127.0.0.1#bind-address=0.0.0.0#" /etc/my.cnf
 RUN sed -i "s#\\[mysqld\\]#\\[mysqld\\]\\nbinlog_format=row#" /etc/my.cnf
 
@@ -56,7 +56,7 @@ ADD wildfly/standalone/deployments/pressgang-ccms-1.9-SNAPSHOT.ear /var/lib/wild
 ADD wildfly/standalone/deployments/pressgang-ds.xml /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
 ADD wildfly/standalone/deployments/teiid-jdbc.jar /var/lib/wildfly/standalone/deployments/teiid-jdbc.jar
 ADD JPPF /home/pressgang
-ADD setup.cli /home/pressgang
+ADD setup.cli /home/pressgang/setup.cli
 
 # Fix up the database password
 RUN sed -i "s#<user-name></user-name>#<user-name>admin</user-name>#" /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
