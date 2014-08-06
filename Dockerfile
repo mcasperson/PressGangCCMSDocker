@@ -27,7 +27,7 @@ RUN chmod +x /root/initial_db_setup
  
 # Add some scripts to launch applications when some condition is met. This is used because supervisord doesn't have the
 # ability to add dependencies between services, and we need to have the database initialized, MariaDB started, and then
-# EAP started in that order. These scripts allow us to do that.
+# WildFly started in that order. These scripts allow us to do that.
 ADD start_delay /root/start_delay
 RUN chmod +x /root/start_delay
 ADD start_wait_for_file /root/start_wait_for_file
@@ -56,5 +56,5 @@ ADD JPPF /root
 ADD setup.cli /root/setup.cli
 
 # Fix up the database password. These details need to match those defined in the initial_db_setup file
-RUN xmlstarlet ed --inplace -u "/datasources/datasource/security/user-name" -v admin /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
-RUN xmlstarlet ed --inplace -u "/datasources/datasource/security/password" -v mariadb /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
+RUN xmlstarlet ed --inplace -u "/datasources/datasource[1]/security/user-name" -v admin /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
+RUN xmlstarlet ed --inplace -u "/datasources/datasource[1]/security/password" -v mariadb /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
