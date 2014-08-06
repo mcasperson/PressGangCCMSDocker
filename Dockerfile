@@ -1,4 +1,4 @@
-# docker build -t mcasperson/pressgangccms:v1 .
+# sudo docker build -t mcasperson/pressgangccms:v1 .
 # mkdir /tmp/database
 # mkdir /tmp/databaselogs
 # mkdir /tmp/aslogs
