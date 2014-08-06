@@ -1,11 +1,13 @@
-# docker build -t pressgangbasetest .
+# docker build -t mcasperson/pressgangccms:v1 .
 # mkdir /tmp/database
 # mkdir /tmp/databaselogs
 # mkdir /tmp/aslogs
-# sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw pressgangbasetest
-# sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw -i -t pressgangbasetest /bin/bash
+# sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw mcasperson/pressgangccms:v1
+# sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw -i -t mcasperson/pressgangccms:v1 /bin/bash
  
 FROM fedora:20
+
+MAINTAINER Matthew Casperson <matthewcasperson@gmail.com>
  
 # Expose the MariaDB, WildFly and Supervisord ports
 EXPOSE 3306 8080 9990 9001
@@ -18,6 +20,10 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
  
 # Install various apps
 RUN yum install mariadb-server nano supervisor wget unzip java-1.8.0-openjdk-headless wildfly xmlstarlet -y
+
+# The WildFly RPM installed above misses a few symbolic links
+RUN ln -s /usr/share/java/jboss-marshalling/jboss-marshalling-river.jar /usr/share/java/jboss-marshalling-river.jar
+RUN ln -s /usr/share/java/resteasy/resteasy-json-p-provider-jandex.jar /usr/share/wildfly/modules/system/layers/base/org/jboss/resteasy/resteasy-json-p-provider/main/resteasy-json-p-provider-jandex.jar
  
 # Create a script to initialize the database directory if it is empty. initialdb.sql contains a clean initial database that
 # will be imported into the database if there is no existing content.
