@@ -21,7 +21,8 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
 # Install various apps
 RUN yum install mariadb-server nano supervisor wget unzip java-1.8.0-openjdk-headless wildfly xmlstarlet -y
 
-# The WildFly RPM installed above misses a few symbolic links
+# The WildFly RPM installed above misses a few symbolic links. Without these links, you'll get a lot of
+# "File not found" errors when starting WildFly.
 RUN ln -s /usr/share/java/jboss-marshalling/jboss-marshalling-river.jar /usr/share/java/jboss-marshalling-river.jar
 RUN ln -s /usr/share/java/resteasy/resteasy-json-p-provider-jandex.jar /usr/share/wildfly/modules/system/layers/base/org/jboss/resteasy/resteasy-json-p-provider/main/resteasy-json-p-provider-jandex.jar
  
