@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [ ! -f "/var/www/html/index.html" ];
+then
+  cp /root/DocBuilder2/index.html /var/www/html
+fi
+
+if [ ! -d "/var/www/html/lib" ];
+then
+  cp -r /root/DocBuilder2/lib /var/www/html
+fi
+
+if [ ! -d "/var/www/html/fonts" ];
+then
+  cp -r /root/DocBuilder2/fonts /var/www/html
+fi

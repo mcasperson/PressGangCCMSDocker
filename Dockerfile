@@ -1,8 +1,5 @@
 # sudo docker build -t mcasperson/pressgangccms:v1 .
-# mkdir /tmp/database
-# mkdir /tmp/databaselogs
-# mkdir /tmp/aslogs
-# mkdir /tmp/www
+# mkdir /tmp/database; mkdir /tmp/databaselogs; mkdir /tmp/aslogs; mkdir /tmp/www
 # sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -p 80:80 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw -v /tmp/www:/var/www/html:rw mcasperson/pressgangccms:v1
 # sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -p 80:80 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw -v /tmp/www:/var/www/html:rw -i -t mcasperson/pressgangccms:v1 /bin/bash
  
