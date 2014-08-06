@@ -19,12 +19,14 @@ if ! test "$(ls -A "/var/database")"; then
 	    mysql -uroot -e "status" > /dev/null 2>&1
 	    RET=$?
     done
-    mysql -uroot -e "CREATE USER 'admin'@'%' IDENTIFIED BY 'mariadb'"
-    mysql -uroot -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION"
     
     # Import the initial database
     mysql -uroot -e "CREATE SCHEMA Skynet;"
     mysql -uroot -DSkynet < /root/initialdb.sql
+    
+    # Create a user for PressGang to use
+    mysql -uroot -e "CREATE USER 'admin'@'localhost' IDENTIFIED BY 'mariadb'"
+    mysql -uroot -e "GRANT ALL PRIVILEGES ON Skynet.* TO 'admin'@'%' WITH GRANT OPTION"
 
     mysqladmin -uroot shutdown       
 fi
