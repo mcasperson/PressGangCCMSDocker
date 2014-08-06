@@ -70,3 +70,6 @@ ADD setup.cli /root/setup.cli
 # Fix up the database password. These details need to match those defined in the initial_db_setup file
 RUN xmlstarlet ed --inplace -u "/datasources/datasource[1]/security/user-name" -v admin /root/wildfly-8.1.0.Final/standalone/deployments/pressgang-ds.xml
 RUN xmlstarlet ed --inplace -u "/datasources/datasource[1]/security/password" -v mariadb /root/wildfly-8.1.0.Final/standalone/deployments/pressgang-ds.xml
+
+# Use NIO for HornetQ. This is required because some host OSs (like Ubuntu) don't support AIO out of the box
+RUN xmlstarlet ed --inplace -s "/server/profile/subsystem[@xmlns=\"urn:jboss:domain:messaging:2.0\"]/hornetq-server -t elem -n journal-type -v "NIO" /root/wildfly-8.1.0.Final/standalone/configuration/standalone-full.xml
