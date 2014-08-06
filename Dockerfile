@@ -70,6 +70,7 @@ RUN xmlstarlet ed --inplace -N server="urn:jboss:domain:2.1" -N messaging="urn:j
 ADD csprocessor /usr/bin/csprocessor
 RUN chmod +x /usr/bin/csprocessor
 ADD csprocessor.jar /usr/lib/csprocessor/csprocessor.jar
+ADD csprocessor.ini /root/.config/csprocessor.ini
 
 # Add Docbuilder
 ADD DocBuilder2 /root/DocBuilder2
