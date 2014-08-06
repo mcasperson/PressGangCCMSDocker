@@ -72,4 +72,4 @@ RUN xmlstarlet ed --inplace -u "/datasources/datasource[1]/security/user-name" -
 RUN xmlstarlet ed --inplace -u "/datasources/datasource[1]/security/password" -v mariadb /root/wildfly-8.1.0.Final/standalone/deployments/pressgang-ds.xml
 
 # Use NIO for HornetQ. This is required because some host OSs (like Ubuntu) don't support AIO out of the box
-RUN xmlstarlet ed --inplace -s "/server/profile/subsystem[@xmlns=\"urn:jboss:domain:messaging:2.0\"]/hornetq-server" -t elem -n journal-type -v "NIO" /root/wildfly-8.1.0.Final/standalone/configuration/standalone-full.xml
+RUN xmlstarlet ed -N server="urn:jboss:domain:2.1" -N messaging="urn:jboss:domain:messaging:2.0" --inplace -a "/server:server/server:profile/messaging:subsystem/messaging:hornetq-server/messaging:journal-file-size" -t elem -n "journal-type" -v "NIO" /root/wildfly-8.1.0.Final/standalone/configuration/standalone-full.xml
