@@ -56,7 +56,7 @@ ADD wildfly/standalone/deployments/mysql-connector-java.jar /root/wildfly-8.1.0.
 ADD wildfly/standalone/deployments/pressgang-ccms-1.9-SNAPSHOT.ear /root/wildfly-8.1.0.Final/standalone/deployments/pressgang-ccms-1.9-SNAPSHOT.ear
 ADD wildfly/standalone/deployments/pressgang-ds.xml /root/wildfly-8.1.0.Final/standalone/deployments/pressgang-ds.xml
 ADD wildfly/standalone/deployments/teiid-jdbc.jar /root/wildfly-8.1.0.Final/standalone/deployments/teiid-jdbc.jar
-ADD JPPF /root
+ADD JPPF /root/JPPF
 ADD setup.cli /root/setup.cli
 
 # Fix up the database password. These details need to match those defined in the initial_db_setup file
@@ -72,5 +72,7 @@ RUN chmod +x /usr/bin/csprocessor
 ADD csprocessor.jar /usr/lib/csprocessor/csprocessor.jar
 
 # Add Docbuilder
-ADD DocBuilder2 /root/
+ADD DocBuilder2 /root/DocBuilder2
+ADD initial_docbuilder_setup /root/initial_docbuilder_setup
+RUN chmod +x /root/initial_docbuilder_setup
 RUN mkdir /root/.docbuilder
