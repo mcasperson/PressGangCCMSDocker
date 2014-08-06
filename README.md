@@ -1,4 +1,4 @@
-These files can be used to create an image hosting PressGang inside Docker. It relies on the ZIP artifact created by the https://github.com/mcasperson/PressGangCCMSDeployment project.
+These files can be used to create an image hosting PressGang inside Docker. It relies on the ZIP artifact created by the https://github.com/mcasperson/PressGangCCMSDeployment project, and the JAR artifact created by the https://github.com/pressgang-ccms/PressGangCCMSCSPClient project, and the application at https://github.com/mcasperson/DocBuilder2.
  
 The Docker image created by this project has been uploaded to the Docker repository at https://registry.hub.docker.com/u/mcasperson/pressgangccms/. To use it, run the following commands
 

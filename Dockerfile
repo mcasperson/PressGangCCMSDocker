@@ -2,30 +2,25 @@
 # mkdir /tmp/database
 # mkdir /tmp/databaselogs
 # mkdir /tmp/aslogs
-# sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw mcasperson/pressgangccms:v1
-# sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw -i -t mcasperson/pressgangccms:v1 /bin/bash
+# mkdir /tmp/www
+# sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -p 80:80 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw -v /tmp/www:/var/www/html:rw mcasperson/pressgangccms:v1
+# sudo docker run -p 8080:8080 -p 9001:9001 -p 3306:3306 -p 80:80 -v /tmp/database:/var/database:rw -v /tmp/databaselogs:/var/databaselogs:rw -v /tmp/aslogs:/var/aslogs:rw -v /tmp/www:/var/www/html:rw -i -t mcasperson/pressgangccms:v1 /bin/bash
  
 FROM fedora:20
 
 MAINTAINER Matthew Casperson <matthewcasperson@gmail.com>
  
 # Expose the MariaDB, WildFly and Supervisord ports
-EXPOSE 3306 8080 9990 9001
+EXPOSE 3306 8080 9990 9001 80
  
 # Configure external volumes for the database files and application server logs
-VOLUME ["/var/database", "/var/databaselogs", "/var/aslogs"]
+VOLUME ["/var/database", "/var/databaselogs", "/var/aslogs", "/var/www/html"]
  
 # Run supervisor, which in turn will run all the other services
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
  
 # Install various apps
-RUN yum install mariadb-server nano supervisor wget unzip java-1.8.0-openjdk-headless xmlstarlet -y
-
-# The WildFly RPM installed above misses a few symbolic links. Without these links, you'll get a lot of
-# "File not found" errors when starting WildFly.
-#RUN yum install wildfly -y 
-#RUN ln -s /usr/share/java/jboss-marshalling/jboss-marshalling-river.jar /usr/share/java/jboss-marshalling-river.jar
-#RUN ln -s /usr/share/java/resteasy/resteasy-json-p-provider-jandex.jar /usr/share/wildfly/modules/system/layers/base/org/jboss/resteasy/resteasy-json-p-provider/main/resteasy-json-p-provider-jandex.jar
+RUN yum install mariadb-server nano supervisor wget unzip java-1.8.0-openjdk-headless xmlstarlet nodejs publican* httpd -y
 
 # Download and extract WildFly
 RUN wget -O /root/wildfly-8.1.0.Final.zip http://download.jboss.org/wildfly/8.1.0.Final/wildfly-8.1.0.Final.zip
@@ -57,7 +52,7 @@ RUN sed -i "s#/var/log#/var/databaselogs#g" /etc/my.cnf
 RUN sed -i "s#bind-address[[:space:]]*=[[:space:]]*127.0.0.1#bind-address=0.0.0.0#" /etc/my.cnf
 RUN sed -i "0,/^\\[mysqld\\]/{s#\\[mysqld\\]#\\[mysqld\\]\\nbinlog_format=row#}" /etc/my.cnf
 
-# Configure PressGang
+# Configure PressGang. All these files come from the https://github.com/mcasperson/PressGangCCMSDeployment project
 ADD wildfly/standalone/configuration/pressgang/application.properties /root/wildfly-8.1.0.Final/standalone/configuration/pressgang/application.properties
 ADD wildfly/standalone/configuration/pressgang/entities.properties /root/wildfly-8.1.0.Final/standalone/configuration/pressgang/entities.properties
 ADD wildfly/standalone/deployments/mysql-connector-java.jar /root/wildfly-8.1.0.Final/standalone/deployments/mysql-connector-java.jar
@@ -73,3 +68,12 @@ RUN xmlstarlet ed --inplace -u "/datasources/datasource[1]/security/password" -v
 
 # Use NIO for HornetQ. This is required because some host OSs (like Ubuntu) don't support AIO out of the box
 RUN xmlstarlet ed --inplace -N server="urn:jboss:domain:2.1" -N messaging="urn:jboss:domain:messaging:2.0"  -a "/server:server/server:profile/messaging:subsystem/messaging:hornetq-server/messaging:journal-file-size" -t elem -n "journal-type" -v "NIO" /root/wildfly-8.1.0.Final/standalone/configuration/standalone-full.xml
+
+# Add csprocessor. The csprocessor.jar file comes from https://github.com/pressgang-ccms/PressGangCCMSCSPClient project
+ADD csprocessor /usr/bin/csprocessor
+RUN chmod +x /usr/bin/csprocessor
+ADD csprocessor.jar /usr/lib/csprocessor/csprocessor.jar
+
+# Add Docbuilder
+ADD DocBuilder2 /root/
+RUN mkdir /root/.docbuilder
