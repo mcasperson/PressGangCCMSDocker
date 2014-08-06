@@ -17,7 +17,7 @@ VOLUME ["/var/database", "/var/databaselogs", "/var/aslogs"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
  
 # Install various apps
-RUN yum install mariadb-server nano supervisor wget unzip java-1.8.0-openjdk-headless wildfly -y
+RUN yum install mariadb-server nano supervisor wget unzip java-1.8.0-openjdk-headless wildfly xmlstarlet -y
  
 # Create a script to initialize the database directory if it is empty. initialdb.sql contains a clean initial database that
 # will be imported into the database if there is no existing content.
@@ -56,5 +56,5 @@ ADD JPPF /root
 ADD setup.cli /root/setup.cli
 
 # Fix up the database password. These details need to match those defined in the initial_db_setup file
-RUN sed -i "0,#<user-name></user-name>#{s#<user-name></user-name>#<user-name>admin</user-name>#}" /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
-RUN sed -i "0,#<password></password>#{s#<password></password>#<password>mariadb</password>#}" /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
+RUN xmlstarlet ed --inplace -u "/datasources/datasource/security/user-name" -v admin /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
+RUN xmlstarlet ed --inplace -u "/datasources/datasource/security/password" -v mariadb /var/lib/wildfly/standalone/deployments/pressgang-ds.xml
