@@ -74,17 +74,16 @@ RUN xmlstarlet ed --inplace -N server="urn:jboss:domain:2.1" -N undertow="urn:jb
   -a "/server:server/server:profile/undertow:subsystem/undertow:server/undertow:host/undertow:location" \
   -t "elem" -n "location" -v "" \
   -i "/server:server/server:profile/undertow:subsystem/undertow:server/undertow:host/location[not(@name)]" \
-  -t "attr" -n "name" -v "www" \
+  -t "attr" -n "name" -v "/docbuilder" \
   -i "/server:server/server:profile/undertow:subsystem/undertow:server/undertow:host/location[not(@handler)]" \
-  -t "attr" -n "handler" -v "www" \
+  -t "attr" -n "handler" -v "docbuilder" \
   -a "/server:server/server:profile/undertow:subsystem/undertow:handlers/undertow:file" \
   -t "elem" -n "file" -v "" \
   -i "/server:server/server:profile/undertow:subsystem/undertow:handlers/file[not(@name)]" \
-  -t "attr" -n "name" -v "www" \
+  -t "attr" -n "name" -v "docbuilder" \
   -i "/server:server/server:profile/undertow:subsystem/undertow:handlers/file[not(@path)]" \
   -t "attr" -n "path" -v "/var/www/html" \
   /root/wildfly-8.1.0.Final/standalone/configuration/standalone-full.xml
-
 
 # Add csprocessor. The csprocessor.jar file comes from https://github.com/pressgang-ccms/PressGangCCMSCSPClient project
 ADD csprocessor /usr/bin/csprocessor
