@@ -64,7 +64,27 @@ RUN xmlstarlet ed --inplace -u "/datasources/datasource[1]/security/user-name" -
 RUN xmlstarlet ed --inplace -u "/datasources/datasource[1]/security/password" -v mariadb /root/wildfly-8.1.0.Final/standalone/deployments/pressgang-ds.xml
 
 # Use NIO for HornetQ. This is required because some host OSs (like Ubuntu) don't support AIO out of the box
-RUN xmlstarlet ed --inplace -N server="urn:jboss:domain:2.1" -N messaging="urn:jboss:domain:messaging:2.0"  -a "/server:server/server:profile/messaging:subsystem/messaging:hornetq-server/messaging:journal-file-size" -t elem -n "journal-type" -v "NIO" /root/wildfly-8.1.0.Final/standalone/configuration/standalone-full.xml
+RUN xmlstarlet ed --inplace -N server="urn:jboss:domain:2.1" -N messaging="urn:jboss:domain:messaging:2.0" \
+  -a "/server:server/server:profile/messaging:subsystem/messaging:hornetq-server/messaging:journal-file-size" \
+  -t "elem" -n "journal-type" -v "NIO" \
+  /root/wildfly-8.1.0.Final/standalone/configuration/standalone-full.xml
+
+# Configure undertow to host content in /var/www/html
+RUN xmlstarlet ed --inplace -N server="urn:jboss:domain:2.1" -N undertow="urn:jboss:domain:undertow:1.1" \
+  -a "/server:server/server:profile/undertow:subsystem/undertow:server/undertow:host/undertow:location" \
+  -t "elem" -n "location" -v "" \
+  -i "/server:server/server:profile/undertow:subsystem/undertow:server/undertow:host/location[not(@name)]" \
+  -t "attr" -n "name" -v "www" \
+  -i "/server:server/server:profile/undertow:subsystem/undertow:server/undertow:host/location[not(@handler)]" \
+  -t "attr" -n "handler" -v "www" \
+  -a "/server:server/server:profile/undertow:subsystem/undertow:handlers/undertow:file" \
+  -t "elem" -n "file" -v "" \
+  -i "/server:server/server:profile/undertow:subsystem/undertow:handlers/file[not(@name)]" \
+  -t "attr" -n "name" -v "www" \
+  -i "/server:server/server:profile/undertow:subsystem/undertow:handlers/file[not(@path)]" \
+  -t "attr" -n "path" -v "/var/www/html" \
+  /root/wildfly-8.1.0.Final/standalone/configuration/standalone-full.xml
+
 
 # Add csprocessor. The csprocessor.jar file comes from https://github.com/pressgang-ccms/PressGangCCMSCSPClient project
 ADD csprocessor /usr/bin/csprocessor
