@@ -21,6 +21,21 @@ RUN yum install mariadb-server nano supervisor wget unzip java-1.8.0-openjdk-hea
 # Download and extract WildFly
 RUN wget -O /root/wildfly-8.1.0.Final.zip http://download.jboss.org/wildfly/8.1.0.Final/wildfly-8.1.0.Final.zip; \
     unzip /root/wildfly-8.1.0.Final.zip -d /root
+    
+# Add csprocessor. The csprocessor.jar file comes from https://github.com/pressgang-ccms/PressGangCCMSCSPClient project
+ADD csprocessor /usr/bin/csprocessor
+RUN chmod +x /usr/bin/csprocessor
+ADD csprocessor.jar /usr/lib/csprocessor/csprocessor.jar
+ADD csprocessor.ini /root/.config/csprocessor.ini
+
+# Configure PressGang. All these files come from the https://github.com/mcasperson/PressGangCCMSDeployment project
+ADD wildfly/standalone/configuration/pressgang/application.properties /root/wildfly-8.1.0.Final/standalone/configuration/pressgang/application.properties
+ADD wildfly/standalone/configuration/pressgang/entities.properties /root/wildfly-8.1.0.Final/standalone/configuration/pressgang/entities.properties
+ADD wildfly/standalone/deployments/mysql-connector-java.jar /root/wildfly-8.1.0.Final/standalone/deployments/mysql-connector-java.jar
+ADD wildfly/standalone/deployments/pressgang-ccms-1.9-SNAPSHOT.ear /root/wildfly-8.1.0.Final/standalone/deployments/pressgang-ccms-1.9-SNAPSHOT.ear
+ADD wildfly/standalone/deployments/pressgang-ds.xml /root/wildfly-8.1.0.Final/standalone/deployments/pressgang-ds.xml
+ADD wildfly/standalone/deployments/teiid-jdbc.jar /root/wildfly-8.1.0.Final/standalone/deployments/teiid-jdbc.jar
+ADD JPPF /root/JPPF
  
 # Create a script to initialize the database directory if it is empty. initialdb.sql contains a clean initial database that
 # will be imported into the database if there is no existing content.
@@ -50,15 +65,6 @@ RUN sed -i "s#datadir[[:space:]]*=[[:space:]]*/var/lib/mysql#datadir=/var/databa
     sed -i "s#bind-address[[:space:]]*=[[:space:]]*127.0.0.1#bind-address=0.0.0.0#" /etc/my.cnf; \
     sed -i "0,/^\\[mysqld\\]/{s#\\[mysqld\\]#\\[mysqld\\]\\nbinlog_format=row#}" /etc/my.cnf
 
-# Configure PressGang. All these files come from the https://github.com/mcasperson/PressGangCCMSDeployment project
-ADD wildfly/standalone/configuration/pressgang/application.properties /root/wildfly-8.1.0.Final/standalone/configuration/pressgang/application.properties
-ADD wildfly/standalone/configuration/pressgang/entities.properties /root/wildfly-8.1.0.Final/standalone/configuration/pressgang/entities.properties
-ADD wildfly/standalone/deployments/mysql-connector-java.jar /root/wildfly-8.1.0.Final/standalone/deployments/mysql-connector-java.jar
-ADD wildfly/standalone/deployments/pressgang-ccms-1.9-SNAPSHOT.ear /root/wildfly-8.1.0.Final/standalone/deployments/pressgang-ccms-1.9-SNAPSHOT.ear
-ADD wildfly/standalone/deployments/pressgang-ds.xml /root/wildfly-8.1.0.Final/standalone/deployments/pressgang-ds.xml
-ADD wildfly/standalone/deployments/teiid-jdbc.jar /root/wildfly-8.1.0.Final/standalone/deployments/teiid-jdbc.jar
-ADD JPPF /root/JPPF
-
 # Fix up the database password. These details need to match those defined in the initial_db_setup file
 # Use NIO for HornetQ. This is required because some host OSs (like Ubuntu) don't support AIO out of the box
 # Configure undertow to host content in /var/www/html
@@ -83,12 +89,6 @@ RUN xmlstarlet ed --inplace -u "/datasources/datasource[1]/security/user-name" -
       -i "/server:server/server:profile/undertow:subsystem/undertow:handlers/file[not(@path)]" \
       -t "attr" -n "path" -v "/var/www/html" \
       /root/wildfly-8.1.0.Final/standalone/configuration/standalone-full.xml
-
-# Add csprocessor. The csprocessor.jar file comes from https://github.com/pressgang-ccms/PressGangCCMSCSPClient project
-ADD csprocessor /usr/bin/csprocessor
-RUN chmod +x /usr/bin/csprocessor
-ADD csprocessor.jar /usr/lib/csprocessor/csprocessor.jar
-ADD csprocessor.ini /root/.config/csprocessor.ini
 
 # Add Docbuilder
 ADD DocBuilder2 /root/DocBuilder2
