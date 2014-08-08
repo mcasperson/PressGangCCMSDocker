@@ -12,15 +12,15 @@
   "Volumes": [
     {
       "ContainerDirectory": "/var/www/html",
-      "HostDirectory": "/var/www/html",
+      "HostDirectory": "/var/www/html"
     },
     {
       "ContainerDirectory": "/var/database",
-      "HostDirectory": "/var/database",
+      "HostDirectory": "/var/database"
     },
     {
       "ContainerDirectory": "/var/pressganglogs",
-      "HostDirectory": "/var/pressganglogs",
+      "HostDirectory": "/var/pressganglogs"
     }
   ],
   "Logging": "/var/pressganglogs"
