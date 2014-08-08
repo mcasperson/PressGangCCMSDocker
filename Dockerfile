@@ -19,7 +19,8 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
 RUN yum install mariadb-server nano supervisor wget unzip java-1.8.0-openjdk-headless xmlstarlet nodejs publican* httpd -y
 
 # Download and extract WildFly
-RUN wget -O /root/wildfly-8.1.0.Final.zip http://download.jboss.org/wildfly/8.1.0.Final/wildfly-8.1.0.Final.zip; unzip /root/wildfly-8.1.0.Final.zip -d /root
+RUN wget -O /root/wildfly-8.1.0.Final.zip http://download.jboss.org/wildfly/8.1.0.Final/wildfly-8.1.0.Final.zip; \
+    unzip /root/wildfly-8.1.0.Final.zip -d /root
  
 # Create a script to initialize the database directory if it is empty. initialdb.sql contains a clean initial database that
 # will be imported into the database if there is no existing content.
