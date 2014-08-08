@@ -7,7 +7,7 @@ FROM fedora:20
 MAINTAINER Matthew Casperson <matthewcasperson@gmail.com>
  
 # Expose the MariaDB, WildFly and Supervisord ports
-EXPOSE 3306 8080 9990 9001
+EXPOSE 8080 3306 9990 9001
  
 # Configure external volumes for the database files and application server logs
 VOLUME ["/var/database", "/var/pressganglogs", "/var/www/html"]
