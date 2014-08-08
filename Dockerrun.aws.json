@@ -12,7 +12,8 @@
   "Volumes": [
     {
       "DocBuilder": "/var/www/html",
-      "Database": "/var/database"
+      "Database": "/var/database",
+      "Logging": "/var/pressganglogs"
     }
   ],
   "Logging": "/var/pressganglogs"
